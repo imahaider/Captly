@@ -13,10 +13,20 @@ jobs:
         os: [windows-latest, windows-11-arm]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
       - run: dotnet restore Captly.slnx
       - run: dotnet build Captly.slnx -c Release --no-restore
-      - run: dotnet test --solution Captly.slnx -c Release --no-build
+
+      # Failing tests become annotations, so they show on the run's summary page.
+      - name: Test
+        shell: pwsh
+        run: |
+          $out = dotnet test --solution Captly.slnx -c Release --no-build 2>&1
+          $code = $LASTEXITCODE
+          $out | Write-Output
+          $out | Select-String -Pattern '^\s*failed |Error Message|Assert\.|Exception:' | Select-Object -First 40 |
+              ForEach-Object { Write-Output "::error::$($_.Line.Trim())" }
+          exit $code
