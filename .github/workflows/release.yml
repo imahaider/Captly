@@ -2,9 +2,16 @@ name: release
 
 # Pushing a tag such as v0.1.0 builds, tests and packages Captly for both Windows runtimes, then
 # publishes the zips and their SHA-256 files as a GitHub release.
+# A push to main that changes this workflow or its scripts runs the same steps without
+# publishing, so packaging is known to work before a tag depends on it.
 on:
   push:
     tags: ['v*']
+    branches: [main]
+    paths:
+      - .github/workflows/release.yml
+      - scripts/get-native.ps1
+      - scripts/publish.ps1
 
 permissions:
   contents: write
@@ -17,7 +24,7 @@ jobs:
         include:
           - rid: win-x64
             os: windows-latest
-          # Upstream ships no ARM64 library, so get-native.ps1 builds it, which needs an ARM64 host (D5).
+          # Upstream ships no ARM64 library, so get-native.ps1 builds it, which needs an ARM64 host.
           - rid: win-arm64
             os: windows-11-arm
     runs-on: ${{ matrix.os }}
@@ -29,6 +36,7 @@ jobs:
           global-json-file: global.json
 
       - name: Check the tag matches the version
+        if: startsWith(github.ref, 'refs/tags/')
         shell: powershell
         run: |
           $version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
@@ -50,7 +58,12 @@ jobs:
         shell: powershell
         run: ./scripts/publish.ps1 -Rid ${{ matrix.rid }}
 
+      - name: Show the package
+        shell: powershell
+        run: Get-ChildItem dist -File | ForEach-Object { Write-Output ("::notice::{0} {1:N1} MB" -f $_.Name, ($_.Length / 1MB)) }
+
       - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: Captly ${{ github.ref_name }}
           body_path: docs/RELEASE_NOTES.md
