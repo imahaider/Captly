@@ -25,6 +25,8 @@ public class OverlayWindowTests
 
     [DllImport("user32", EntryPoint = "GetWindowLongPtrW")] private static extern long GetWindowLongPtr(nint hwnd, int index);
     [DllImport("user32")] private static extern nint WindowFromPoint(NativePoint point);
+    [DllImport("user32")] private static extern int GetSystemMetrics(int index);
+    [DllImport("user32")] private static extern int GetWindowThreadProcessId(nint hwnd, out int pid);
 
     // Far off every screen, in physical pixels: 1000 x 600 with the anchor 10 % up from the bottom.
     private static readonly PixelRect OffscreenArea = PixelRect.FromSize(-20000, -20000, 1000, 600);
@@ -69,11 +71,14 @@ public class OverlayWindowTests
     });
 
     // This uses Windows' own hit test on screen. The window is 2 % opaque, so it cannot be seen,
-    // but is still solid enough to catch clicks when click-through is off.
+    // but is still solid enough to catch clicks when click-through is off. It sits mid-screen,
+    // where a desktop has nothing on top. A build machine may, and then the test cannot tell.
     [Fact]
     public void Clicks_ReallyPassThrough() => Ui.Run(() =>
     {
-        var window = new OverlayWindow { Layout = new CaptionLayout(new PixelPoint(200, 280), new PixelRect(0, 0, 400, 300), 1, 22, 300), Opacity = 0.02 };
+        var middle = new PixelPoint(GetSystemMetrics(0) / 2, GetSystemMetrics(1) / 2);
+        var area = new PixelRect(middle.X - 200, middle.Y - 150, middle.X + 200, middle.Y + 150);
+        var window = new OverlayWindow { Layout = new CaptionLayout(new PixelPoint(middle.X, middle.Y + 130), area, 1, 22, 300), Opacity = 0.02 };
         window.Bubble.Background = Brushes.White;
         ((System.Windows.Controls.Border)window.Content).Background = Brushes.White;
         window.ShowLines(["Probe"]);
@@ -91,6 +96,8 @@ public class OverlayWindowTests
         var through = WindowFromPoint(point);
         window.Close();
 
+        GetWindowThreadProcessId(solid, out var owner);
+        if (solid != hwnd && owner != Environment.ProcessId) Assert.Skip("Another app's window covers the middle of the screen, so the hit test cannot reach the probe.");
         Assert.Equal(hwnd, solid);
         Assert.NotEqual(hwnd, through);
     });
