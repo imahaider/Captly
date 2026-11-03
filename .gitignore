@@ -1,0 +1,22 @@
+bin/
+obj/
+.vs/
+*.user
+publish/
+dist/
+TestResults/
+
+# Fetched or built by scripts/get-native.ps1
+native/
+.tools/
+
+# Spike output and fetched third-party binaries
+spikes/**/native/
+spikes/**/native-arm64/
+spikes/**/out/
+*.wav
+!samples/*.wav
+debug.wav
+
+# Local copies of published release files
+releases/

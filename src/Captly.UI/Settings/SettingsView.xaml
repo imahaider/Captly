@@ -1,0 +1,286 @@
+<!-- The eight Settings screens (PLAN.md §6.3 #1–8), bound to Captly.Core.Shell's page models.
+     Each page is a resource; SettingsView gives it its model as DataContext. -->
+<UserControl x:Class="Captly.UI.Settings.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Captly.UI.Controls"
+             xmlns:sh="clr-namespace:Captly.UI.Shell"
+             FontFamily="{DynamicResource Font.Base}"
+             FontSize="13"
+             Foreground="{DynamicResource Text.Primary}">
+    <UserControl.Resources>
+        <sh:VisibleWhen x:Key="Visible" />
+        <sh:ExeIcon x:Key="ExeIcon" />
+        <sh:TextToColor x:Key="TextToColor" />
+
+        <Style x:Key="Quiet" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+        </Style>
+
+        <!-- General -->
+        <StackPanel x:Key="General">
+            <c:GroupCard Header="Startup">
+                <c:SettingRow Label="Start Captly when Windows starts">
+                    <c:ToggleSwitch IsChecked="{Binding StartWithWindows}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Turn on captions when a video plays" Description="Captly waits quietly in the tray and starts as soon as it hears a video.">
+                    <c:ToggleSwitch IsChecked="{Binding AutoCaption}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Pause captions when the video pauses">
+                    <c:ToggleSwitch IsChecked="{Binding PauseWithVideo}" />
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="App">
+                <c:SettingRow Label="Theme">
+                    <c:SegmentedControl SelectedIndex="{Binding ThemeIndex}">
+                        <c:SegmentedItem Content="Light" />
+                        <c:SegmentedItem Content="Dark" />
+                        <c:SegmentedItem Content="Match Windows" />
+                    </c:SegmentedControl>
+                </c:SettingRow>
+                <c:SettingRow Label="App language">
+                    <c:MacSelect ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" DisplayMemberPath="Label" />
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="Updates">
+                <c:SettingRow Label="Check for updates automatically">
+                    <c:ToggleSwitch IsChecked="{Binding CheckUpdates}" />
+                </c:SettingRow>
+                <c:SettingRow Label="{Binding VersionLabel}" Description="{Binding Updates.Text}">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Margin="0,0,8,0" Style="{StaticResource TextButton}" Content="Get It" Command="{Binding Updates.OpenReleaseCommand}"
+                                Visibility="{Binding Updates.IsAvailable, Converter={StaticResource Visible}}" />
+                        <Button Style="{StaticResource SecondaryButton}" Content="Check Now" Command="{Binding Updates.CheckCommand}" />
+                    </StackPanel>
+                </c:SettingRow>
+            </c:GroupCard>
+        </StackPanel>
+
+        <!-- Source -->
+        <DataTemplate x:Key="AppRow">
+            <c:AppSourceRow GroupName="Sources" AppName="{Binding Name}" Subtitle="{Binding Subtitle}" Level="{Binding Level}"
+                            IsNowPlaying="{Binding IsNowPlaying}" ShowMeter="{Binding ShowMeter}" IsChecked="{Binding IsChecked}"
+                            AppIcon="{Binding IconPath, Converter={StaticResource ExeIcon}}" />
+        </DataTemplate>
+        <StackPanel x:Key="Source">
+            <c:GroupCard Header="Caption source">
+                <c:SettingRow Label="Follow what's playing" Description="Captions the app that's playing a video, and switches when you change apps.">
+                    <c:ToggleSwitch IsChecked="{Binding FollowPlaying}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Switch apps after">
+                    <c:MacSelect ItemsSource="{Binding SwitchDelayChoices}" SelectedItem="{Binding SwitchDelay}" DisplayMemberPath="Label" IsEnabled="{Binding FollowPlaying}" />
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="Apps playing sound" HeaderDetail="Updates live" ItemsSource="{Binding Rows}" ItemTemplate="{StaticResource AppRow}" />
+            <c:FooterNote Margin="2,-10,0,0" Icon="{StaticResource Icon.About}" Text="{Binding Footer}" />
+        </StackPanel>
+
+        <!-- Appearance -->
+        <StackPanel x:Key="Appearance">
+            <Border Height="128" Margin="0,0,0,20" CornerRadius="12" ClipToBounds="True" AutomationProperties.Name="Caption preview">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Offset="0" Color="#2B3142" />
+                        <GradientStop Offset="1" Color="#1C2130" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid>
+                    <Border Width="118" Height="60" Margin="56,34,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#34405A" CornerRadius="30,30,0,0" />
+                    <c:CaptionBubble MaxWidth="460" HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="False"
+                                     Text="The fan pulls in air, and most of it flows around the core, not through it."
+                                     CaptionStyle="{Binding Style}" FontSize="{Binding TextSize}"
+                                     TextColor="{Binding TextColor, Converter={StaticResource TextToColor}}" BackgroundOpacity="{Binding BackgroundOpacity}" />
+                </Grid>
+            </Border>
+            <TextBlock Margin="0,0,0,10" Style="{StaticResource Text.GroupHeader}" Text="Style" />
+            <UniformGrid Margin="0,0,0,20" Rows="1">
+                <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Classic" Content="Classic" IsChecked="{Binding IsClassic}" />
+                <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Glass" Content="Glass" IsChecked="{Binding IsGlass}" />
+                <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Outline" Content="Outline" IsChecked="{Binding IsOutline}" />
+                <c:StylePresetCard GroupName="Styles" Preset="HighContrast" Content="High contrast" IsChecked="{Binding IsHighContrast}" />
+            </UniformGrid>
+            <c:GroupCard Header="Text">
+                <c:SettingRow Label="Text size" IsWide="True">
+                    <c:MacSlider Minimum="14" Maximum="40" SmallChange="1" LargeChange="2" IsSnapToTickEnabled="True" TickFrequency="1" ShowSizeLabels="True" Value="{Binding TextSize}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Background" IsWide="True">
+                    <c:MacSlider Minimum="0" Maximum="100" SmallChange="1" LargeChange="10" IsSnapToTickEnabled="True" TickFrequency="1" ValueFormat="{}{0:0}%" Value="{Binding BackgroundPercent}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Text color" IsWide="True">
+                    <StackPanel Orientation="Horizontal">
+                        <c:ColorSwatch Color="White" GroupName="Swatches" IsChecked="{Binding IsWhite}" AutomationProperties.Name="White" />
+                        <c:ColorSwatch Color="#FFD60A" GroupName="Swatches" IsChecked="{Binding IsYellow}" AutomationProperties.Name="Yellow" />
+                        <c:ColorSwatch Color="#5AC8FA" GroupName="Swatches" IsChecked="{Binding IsCyan}" AutomationProperties.Name="Cyan" />
+                        <c:ColorSwatch Color="#30D158" GroupName="Swatches" IsChecked="{Binding IsGreen}" AutomationProperties.Name="Green" />
+                    </StackPanel>
+                </c:SettingRow>
+                <c:SettingRow Label="Lines on screen">
+                    <c:MacSelect ItemsSource="{Binding LineChoices}" SelectedItem="{Binding Lines}" DisplayMemberPath="Label" />
+                </c:SettingRow>
+                <c:SettingRow Label="Hide captions after silence">
+                    <c:MacSelect ItemsSource="{Binding HideAfterChoices}" SelectedItem="{Binding HideAfter}" DisplayMemberPath="Label" />
+                </c:SettingRow>
+            </c:GroupCard>
+        </StackPanel>
+
+        <!-- Position -->
+        <StackPanel x:Key="Position">
+            <TextBlock Margin="0,0,0,10" Style="{StaticResource Text.GroupHeader}" Text="Where captions appear" />
+            <UniformGrid Margin="0,0,0,20" Rows="1">
+                <c:ChoiceCard Margin="0,0,12,0" GroupName="Placement" IsChecked="{Binding IsPinToWindow}" Title="Pin to the video window"
+                              Description="Captions sit on the video and move, resize and go fullscreen with it.">
+                    <c:ChoiceCard.Preview>
+                        <Border Height="86" Background="{DynamicResource Bg.Subtle}" CornerRadius="8">
+                            <Border Width="190" Height="62" Background="#2B3142" CornerRadius="5">
+                                <Border Width="90" Height="9" Margin="0,0,0,10" VerticalAlignment="Bottom" Background="White" CornerRadius="4.5" />
+                            </Border>
+                        </Border>
+                    </c:ChoiceCard.Preview>
+                </c:ChoiceCard>
+                <c:ChoiceCard GroupName="Placement" IsChecked="{Binding IsFixed}" Title="Fixed spot on screen"
+                              Description="Captions stay where you put them. Hold Ctrl and drag to move.">
+                    <c:ChoiceCard.Preview>
+                        <Border Height="86" Background="{DynamicResource Bg.Subtle}" CornerRadius="8">
+                            <Grid>
+                                <Border Width="120" Height="50" Margin="14,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#A7B0C0" CornerRadius="4" />
+                                <Border Width="120" Height="12" Margin="0,0,0,10" VerticalAlignment="Bottom" Background="#1D1D1F" CornerRadius="6" />
+                            </Grid>
+                        </Border>
+                    </c:ChoiceCard.Preview>
+                </c:ChoiceCard>
+            </UniformGrid>
+            <c:GroupCard Header="Placement">
+                <c:SettingRow Label="Distance from bottom" IsWide="True">
+                    <c:MacSlider Minimum="0" Maximum="40" SmallChange="1" LargeChange="5" IsSnapToTickEnabled="True" TickFrequency="1" ValueFormat="{}{0:0}%" Value="{Binding BottomOffset}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Maximum width" IsWide="True">
+                    <c:MacSlider Minimum="30" Maximum="100" SmallChange="1" LargeChange="10" IsSnapToTickEnabled="True" TickFrequency="1" ValueFormat="{}{0:0}%" Value="{Binding MaxWidth}" />
+                </c:SettingRow>
+                <c:SettingRow Label="In fullscreen">
+                    <c:MacSelect ItemsSource="{Binding FullscreenChoices}" SelectedItem="{Binding Fullscreen}" DisplayMemberPath="Label" />
+                </c:SettingRow>
+                <c:SettingRow Label="Let clicks pass through captions" Description="You can still click the video's controls under the captions.">
+                    <c:ToggleSwitch IsChecked="{Binding ClickThrough}" />
+                </c:SettingRow>
+            </c:GroupCard>
+        </StackPanel>
+
+        <!-- Speech Model -->
+        <DataTemplate x:Key="ModelRowTemplate">
+            <c:ModelRow ModelName="{Binding Name}" Parameters="{Binding Parameters}" Description="{Binding Description}"
+                        IsRecommended="{Binding IsRecommended}" State="{Binding State}" Progress="{Binding Progress}" />
+        </DataTemplate>
+        <StackPanel x:Key="SpeechModel">
+            <c:GroupCard Header="Model" ItemsSource="{Binding Rows}" ItemTemplate="{StaticResource ModelRowTemplate}" />
+            <TextBlock Margin="2,-10,0,16" Foreground="{DynamicResource Close.Hover}" FontSize="12.5" Text="{Binding Message}" TextWrapping="Wrap"
+                       Visibility="{Binding Message, Converter={StaticResource Visible}}" />
+            <c:GroupCard Header="Performance">
+                <c:SettingRow Label="Run on" Description="{Binding RunOnNote}">
+                    <c:SegmentedControl SelectedIndex="{Binding RunOnIndex}">
+                        <c:SegmentedItem Content="Automatic" />
+                        <c:SegmentedItem Content="Graphics card" IsEnabled="{Binding CanUseGraphicsCard}" />
+                        <c:SegmentedItem Content="Processor" />
+                    </c:SegmentedControl>
+                </c:SettingRow>
+                <c:SettingRow Label="Graphics card">
+                    <c:MacSelect ItemsSource="{Binding Adapters}" SelectedItem="{Binding Adapter}" DisplayMemberPath="Label" IsEnabled="{Binding CanUseGraphicsCard}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Speed test" Description="{Binding TestDescription}">
+                    <Button Style="{StaticResource SecondaryButton}" Content="Run Test" Command="{Binding SpeedTestCommand}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Language">
+                    <c:MacSelect ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" DisplayMemberPath="Label" />
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:FooterNote Icon="{StaticResource Icon.Lock}" Text="Speech is processed entirely on this PC. Nothing you watch is uploaded." />
+        </StackPanel>
+
+        <!-- Transcripts -->
+        <DataTemplate x:Key="RecentRow">
+            <c:SettingRow Label="{Binding Title}" Description="{Binding Detail}">
+                <Button Style="{StaticResource SubtleButton}" Content="Open" Command="{Binding OpenCommand}" AutomationProperties.Name="{Binding Title, StringFormat='Open {0}'}" />
+            </c:SettingRow>
+        </DataTemplate>
+        <StackPanel x:Key="Transcripts">
+            <c:GroupCard Header="Saving">
+                <c:SettingRow Label="Save transcripts">
+                    <c:ToggleSwitch IsChecked="{Binding Enabled}" />
+                </c:SettingRow>
+                <c:SettingRow Label="Folder">
+                    <StackPanel Orientation="Horizontal">
+                        <c:Icon VerticalAlignment="Center" Size="14" Data="{StaticResource Icon.Folder}" Foreground="#30B0C7" />
+                        <TextBlock Margin="7,0,16,0" MaxWidth="320" Style="{StaticResource Quiet}" Text="{Binding FolderDisplay}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Folder}" />
+                        <Button Style="{StaticResource SecondaryButton}" Content="Change…" Command="{Binding ChangeFolderCommand}" AutomationProperties.Name="Change folder" />
+                    </StackPanel>
+                </c:SettingRow>
+                <c:SettingRow Label="File types">
+                    <StackPanel Orientation="Horizontal">
+                        <c:MacCheckBox Margin="0,0,16,0" Content="Text (.txt)" IsChecked="{Binding Txt}" />
+                        <c:MacCheckBox Content="Subtitles (.srt)" IsChecked="{Binding Srt}" />
+                    </StackPanel>
+                </c:SettingRow>
+                <c:SettingRow Label="Name files after the video" Description="Uses the video's title. When off, files are named by date, time and app.">
+                    <c:ToggleSwitch IsChecked="{Binding NameAfterVideo}" />
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="Recent" ItemsSource="{Binding Recent}" ItemTemplate="{StaticResource RecentRow}"
+                         Visibility="{Binding HasRecent, Converter={StaticResource Visible}}">
+                <c:GroupCard.HeaderAction>
+                    <Button Margin="0,-4" Padding="0" Style="{StaticResource TextButton}" Content="Open Folder" Command="{Binding OpenFolderCommand}" />
+                </c:GroupCard.HeaderAction>
+            </c:GroupCard>
+            <c:GroupCard Header="Recent" Visibility="{Binding HasRecent, Converter={StaticResource Visible}, ConverterParameter=Invert}">
+                <c:SettingRow Label="No transcripts yet" Description="They appear here after Captly captions a video." />
+            </c:GroupCard>
+        </StackPanel>
+
+        <!-- Shortcuts -->
+        <DataTemplate x:Key="ShortcutRow">
+            <c:SettingRow Label="{Binding Label}" Description="{Binding Problem}">
+                <c:ShortcutRecorder Shortcut="{Binding Shortcut}" Loaded="Recorder_Loaded" />
+            </c:SettingRow>
+        </DataTemplate>
+        <StackPanel x:Key="Shortcuts">
+            <c:GroupCard Header="Keyboard shortcuts" Description="These work everywhere, even over a fullscreen video. Click a shortcut, then press the new keys."
+                         ItemsSource="{Binding Rows}" ItemTemplate="{StaticResource ShortcutRow}" />
+            <c:GroupCard Header="Mouse">
+                <c:SettingRow Label="Move the captions" Description="In the fixed spot mode.">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,6,0" Style="{StaticResource Quiet}" Text="Hold" />
+                        <c:Keycap Content="Ctrl" />
+                        <TextBlock Margin="6,0,0,0" Style="{StaticResource Quiet}" Text="and drag" />
+                    </StackPanel>
+                </c:SettingRow>
+            </c:GroupCard>
+            <Button HorizontalAlignment="Right" Style="{StaticResource SecondaryButton}" Content="Restore Defaults" Command="{Binding RestoreDefaultsCommand}" />
+        </StackPanel>
+
+        <!-- About -->
+        <DataTemplate x:Key="CreditRow">
+            <c:SettingRow Label="{Binding Name}">
+                <TextBlock Style="{StaticResource Quiet}" Text="{Binding Detail}" />
+            </c:SettingRow>
+        </DataTemplate>
+        <StackPanel x:Key="About">
+            <c:AppTile Size="76" Margin="0,8,0,0" HorizontalAlignment="Center" />
+            <TextBlock Margin="0,14,0,0" HorizontalAlignment="Center" FontSize="28" FontWeight="Bold" Text="Captly" />
+            <TextBlock Margin="0,8,0,0" HorizontalAlignment="Center" FontSize="13.5" Foreground="{DynamicResource Text.Secondary}" Text="{Binding VersionLine}" />
+            <StackPanel Margin="0,18,0,0" HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button Margin="0,0,10,0" Style="{StaticResource PrimaryButton}" Content="Check for Updates" Command="{Binding Updates.CheckCommand}" />
+                <Button Margin="0,0,10,0" Style="{StaticResource SecondaryButton}" Content="View on GitHub" Command="{Binding ViewOnGitHubCommand}" />
+                <Button Style="{StaticResource SecondaryButton}" Content="Report a Problem" Command="{Binding ReportProblemCommand}" />
+            </StackPanel>
+            <StackPanel Margin="0,10,0,0" HorizontalAlignment="Center" Orientation="Horizontal">
+                <TextBlock Style="{StaticResource Quiet}" Text="{Binding Updates.Text}" />
+                <Button Margin="8,0,0,0" Padding="0" Style="{StaticResource TextButton}" Content="Get It" Command="{Binding Updates.OpenReleaseCommand}"
+                        Visibility="{Binding Updates.IsAvailable, Converter={StaticResource Visible}}" />
+            </StackPanel>
+            <c:GroupCard Margin="0,22,0,0" Header="Built with open source" ItemsSource="{Binding Credits}" ItemTemplate="{StaticResource CreditRow}" />
+            <TextBlock Margin="0,6,0,0" HorizontalAlignment="Center" Style="{StaticResource Quiet}" Text="{Binding Footer}" />
+        </StackPanel>
+    </UserControl.Resources>
+
+    <c:SettingsShell x:Name="Shell" />
+</UserControl>

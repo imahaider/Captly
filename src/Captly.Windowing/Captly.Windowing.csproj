@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(CaptlyWindowsTfm)</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Captly.Core\Captly.Core.csproj" />
+    <InternalsVisibleTo Include="Captly.Windowing.Tests" />
+  </ItemGroup>
+
+</Project>

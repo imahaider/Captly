@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Captly.App/Captly.App.csproj" />
+    <Project Path="src/Captly.Audio/Captly.Audio.csproj" />
+    <Project Path="src/Captly.Core/Captly.Core.csproj" />
+    <Project Path="src/Captly.Media/Captly.Media.csproj" />
+    <Project Path="src/Captly.Speech/Captly.Speech.csproj" />
+    <Project Path="src/Captly.UI/Captly.UI.csproj" />
+    <Project Path="src/Captly.Updates/Captly.Updates.csproj" />
+    <Project Path="src/Captly.Windowing/Captly.Windowing.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Captly.Audio.Tests/Captly.Audio.Tests.csproj" />
+    <Project Path="tests/Captly.Core.Tests/Captly.Core.Tests.csproj" />
+    <Project Path="tests/Captly.Speech.Tests/Captly.Speech.Tests.csproj" />
+    <Project Path="tests/Captly.UI.Tests/Captly.UI.Tests.csproj" />
+    <Project Path="tests/Captly.Windowing.Tests/Captly.Windowing.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Bench/Bench.csproj" />
+  </Folder>
+</Solution>

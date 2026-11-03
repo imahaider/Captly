@@ -1,0 +1,46 @@
+name: Bug report
+description: Something in Captly doesn't work as it should.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what Captly did instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can we see it happen?
+      placeholder: |
+        1. Play a YouTube video in Chrome
+        2. Press Ctrl + Alt + C
+        3. …
+  - type: input
+    id: version
+    attributes:
+      label: Captly version
+      description: Settings › About Captly shows it.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version and PC
+      description: For example "Windows 11 24H2, Intel Core i5" or "Windows 11 25H2, Snapdragon X Plus".
+    validations:
+      required: true
+  - type: input
+    id: app
+    attributes:
+      label: The app playing the video
+      placeholder: Google Chrome, Microsoft Edge, VLC…
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: |
+        The newest file in %LOCALAPPDATA%\Captly\logs helps a lot. It holds app names and video titles, but no captions or audio. Remove anything you'd rather not share.
+      render: text

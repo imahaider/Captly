@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(CaptlyWindowsTfm)</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Captly.Core\Captly.Core.csproj" />
+    <PackageReference Include="H.NotifyIcon.Wpf" />
+    <Resource Include="..\..\assets\brand\tray\*.ico" Link="Tray\%(Filename)%(Extension)" />
+    <Resource Include="..\..\assets\fonts\*.ttf" Link="Fonts\%(Filename)%(Extension)" />
+    <InternalsVisibleTo Include="Captly.UI.Tests" />
+  </ItemGroup>
+
+</Project>

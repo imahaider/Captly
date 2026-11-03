@@ -1,0 +1,164 @@
+<!-- Rebuilds screens from the design images with static sample data, for side-by-side comparison.
+     These are not the real screens, which arrive in Phase 8. -->
+<UserControl x:Class="Captly.UI.Gallery.GalleryShell"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Captly.UI.Controls"
+             FontFamily="{DynamicResource Font.Base}"
+             FontSize="13"
+             Foreground="{DynamicResource Text.Primary}">
+    <UserControl.Resources>
+        <StackPanel x:Key="General">
+            <c:GroupCard Header="Startup">
+                <c:SettingRow Label="Start Captly when Windows starts">
+                    <c:ToggleSwitch />
+                </c:SettingRow>
+                <c:SettingRow Label="Turn on captions when a video plays" Description="Captly waits quietly in the tray and starts as soon as it hears a video.">
+                    <c:ToggleSwitch IsChecked="True" />
+                </c:SettingRow>
+                <c:SettingRow Label="Pause captions when the video pauses">
+                    <c:ToggleSwitch IsChecked="True" />
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="App">
+                <c:SettingRow Label="Theme">
+                    <c:SegmentedControl SelectedIndex="2">
+                        <c:SegmentedItem Content="Light" />
+                        <c:SegmentedItem Content="Dark" />
+                        <c:SegmentedItem Content="Match Windows" />
+                    </c:SegmentedControl>
+                </c:SettingRow>
+                <c:SettingRow Label="App language">
+                    <c:MacSelect SelectedIndex="0">
+                        <c:MacSelectItem Content="English" />
+                    </c:MacSelect>
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="Updates">
+                <c:SettingRow Label="Check for updates automatically">
+                    <c:ToggleSwitch IsChecked="True" />
+                </c:SettingRow>
+                <c:SettingRow Label="Captly 1.0.0" Description="You're up to date.">
+                    <Button Style="{StaticResource SecondaryButton}" Content="Check Now" />
+                </c:SettingRow>
+            </c:GroupCard>
+        </StackPanel>
+
+        <StackPanel x:Key="Source">
+            <c:GroupCard Header="Caption source">
+                <c:SettingRow Label="Follow what's playing" Description="Captions the app that's playing a video, and switches when you change apps.">
+                    <c:ToggleSwitch IsChecked="True" />
+                </c:SettingRow>
+                <c:SettingRow Label="Switch apps after">
+                    <c:MacSelect SelectedIndex="0">
+                        <c:MacSelectItem Content="2 seconds" />
+                    </c:MacSelect>
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="Apps playing sound" HeaderDetail="Updates live">
+                <c:AppSourceRow GroupName="Sources" AppName="Google Chrome" Subtitle="YouTube · Inside a jet engine" IsNowPlaying="True" Level="0.8" IsChecked="True" />
+                <c:AppSourceRow GroupName="Sources" AppName="Spotify" Subtitle="Music" Level="0.6" />
+                <c:AppSourceRow GroupName="Sources" AppName="VLC media player" Subtitle="Paused" />
+                <c:AppSourceRow GroupName="Sources" AppName="All system audio" ShowMeter="False" Subtitle="Everything your speakers play, including notifications" />
+            </c:GroupCard>
+            <c:FooterNote Margin="2,-10,0,0" Icon="{StaticResource Icon.About}" Text="Per-app capture is on. Only the selected app is heard — music and notifications from other apps are ignored." />
+        </StackPanel>
+
+        <StackPanel x:Key="Appearance">
+            <TextBlock Margin="0,0,0,10" Style="{StaticResource Text.GroupHeader}" Text="Style" />
+            <UniformGrid Margin="0,0,0,20" Rows="1">
+                <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Classic" Content="Classic" />
+                <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Glass" Content="Glass" IsChecked="True" />
+                <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Outline" Content="Outline" />
+                <c:StylePresetCard GroupName="Styles" Preset="HighContrast" Content="High contrast" />
+            </UniformGrid>
+            <c:GroupCard Header="Text">
+                <c:SettingRow Label="Text size" IsWide="True">
+                    <c:MacSlider Minimum="14" Maximum="40" Value="22" ShowSizeLabels="True" />
+                </c:SettingRow>
+                <c:SettingRow Label="Background" IsWide="True">
+                    <c:MacSlider Minimum="0" Maximum="100" Value="66" ValueFormat="{}{0:0}%" />
+                </c:SettingRow>
+                <c:SettingRow Label="Text color" IsWide="True">
+                    <StackPanel Orientation="Horizontal">
+                        <c:ColorSwatch Color="White" GroupName="Swatches" IsChecked="True" AutomationProperties.Name="White" />
+                        <c:ColorSwatch Color="#FFD60A" GroupName="Swatches" AutomationProperties.Name="Yellow" />
+                        <c:ColorSwatch Color="#5AC8FA" GroupName="Swatches" AutomationProperties.Name="Cyan" />
+                        <c:ColorSwatch Color="#30D158" GroupName="Swatches" AutomationProperties.Name="Green" />
+                    </StackPanel>
+                </c:SettingRow>
+                <c:SettingRow Label="Lines on screen">
+                    <c:MacSelect SelectedIndex="0">
+                        <c:MacSelectItem Content="2" />
+                    </c:MacSelect>
+                </c:SettingRow>
+            </c:GroupCard>
+        </StackPanel>
+
+        <StackPanel x:Key="SpeechModel">
+            <c:GroupCard Header="Model">
+                <c:ModelRow ModelName="Moonshine Tiny Streaming" Parameters="34M parameters" Description="Fastest. Great for clear speech on any PC." State="InUse" />
+                <c:ModelRow ModelName="Moonshine Small Streaming" Parameters="123M parameters" Description="More accurate." IsRecommended="True" State="Available" />
+                <c:ModelRow ModelName="Moonshine Medium Streaming" Parameters="245M parameters" Description="Most accurate." State="Available" />
+            </c:GroupCard>
+            <c:FooterNote Icon="{StaticResource Icon.Lock}" Text="Speech is processed entirely on this PC. Nothing you watch is uploaded." />
+        </StackPanel>
+
+        <StackPanel x:Key="Transcripts">
+            <c:GroupCard Header="Saving">
+                <c:SettingRow Label="Save transcripts">
+                    <c:ToggleSwitch IsChecked="True" />
+                </c:SettingRow>
+                <c:SettingRow Label="Folder">
+                    <StackPanel Orientation="Horizontal">
+                        <c:Icon VerticalAlignment="Center" Size="14" Data="{StaticResource Icon.Folder}" Foreground="#30B0C7" />
+                        <TextBlock Margin="7,0,16,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource Text.Secondary}" Text="Documents › Captly" />
+                        <Button Style="{StaticResource SecondaryButton}" Content="Change…" />
+                    </StackPanel>
+                </c:SettingRow>
+                <c:SettingRow Label="File types">
+                    <StackPanel Orientation="Horizontal">
+                        <c:MacCheckBox Margin="0,0,16,0" Content="Text (.txt)" IsChecked="True" />
+                        <c:MacCheckBox Content="Subtitles (.srt)" IsChecked="True" />
+                    </StackPanel>
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="Recent">
+                <c:GroupCard.HeaderAction>
+                    <Button Margin="0,-4" Padding="0" Style="{StaticResource TextButton}" Content="Open Folder" />
+                </c:GroupCard.HeaderAction>
+                <c:SettingRow Label="Inside a jet engine" Description="Today · YouTube · TXT + SRT">
+                    <Button Style="{StaticResource SubtleButton}" Content="Open" />
+                </c:SettingRow>
+            </c:GroupCard>
+        </StackPanel>
+
+        <StackPanel x:Key="Shortcuts">
+            <c:GroupCard Header="Keyboard shortcuts" Description="These work everywhere, even over a fullscreen video. Click a shortcut, then press the new keys.">
+                <c:SettingRow Label="Turn captions on or off">
+                    <c:ShortcutRecorder Shortcut="Ctrl+Alt+C" />
+                </c:SettingRow>
+                <c:SettingRow Label="Show or hide captions">
+                    <c:ShortcutRecorder Shortcut="Ctrl+Alt+H" />
+                </c:SettingRow>
+                <c:SettingRow Label="Switch to the next app playing sound">
+                    <c:ShortcutRecorder Shortcut="Ctrl+Alt+S" />
+                </c:SettingRow>
+                <c:SettingRow Label="Open Captly settings">
+                    <c:ShortcutRecorder Shortcut="Ctrl+Alt+O" />
+                </c:SettingRow>
+            </c:GroupCard>
+            <c:GroupCard Header="Mouse">
+                <c:SettingRow Label="Move the captions">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="0,0,6,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource Text.Secondary}" Text="Hold" />
+                        <c:Keycap Content="Ctrl" />
+                        <TextBlock Margin="6,0,0,0" VerticalAlignment="Center" FontSize="12.5" Foreground="{DynamicResource Text.Secondary}" Text="and drag" />
+                    </StackPanel>
+                </c:SettingRow>
+            </c:GroupCard>
+        </StackPanel>
+    </UserControl.Resources>
+
+    <c:SettingsShell x:Name="Shell" />
+</UserControl>

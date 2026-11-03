@@ -1,0 +1,252 @@
+<!-- The tray popover (PLAN.md §6.3 #9 and "Tray popover.png"): 360 × 600, bound to PopoverModel. -->
+<Window x:Class="Captly.UI.Popover.PopoverWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:Captly.UI.Controls"
+        xmlns:sh="clr-namespace:Captly.UI.Shell"
+        Title="Captly"
+        Width="360"
+        Height="600"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Topmost="True"
+        Background="{DynamicResource Bg.Window}"
+        FontFamily="{DynamicResource Font.Base}"
+        FontSize="13"
+        Foreground="{DynamicResource Text.Primary}"
+        AutomationProperties.Name="Captly">
+    <Window.Resources>
+        <sh:VisibleWhen x:Key="Visible" />
+        <sh:BytesToImage x:Key="BytesToImage" />
+
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource Bg.Card}" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+
+        <Style x:Key="Small" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+        </Style>
+
+        <Style x:Key="TileTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+
+        <!-- A 2 × 2 tile: round icon, title and a detail line. Checked tiles fill the circle with the accent. -->
+        <Style x:Key="Tile" TargetType="ButtonBase">
+            <Setter Property="Height" Value="72" />
+            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Ring}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ButtonBase">
+                        <Border x:Name="Face" Background="{DynamicResource Bg.Card}" CornerRadius="12" Padding="11,0">
+                            <ContentPresenter VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Face" Property="Background" Value="{DynamicResource Bg.Subtle}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TileCircle" TargetType="Border">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Margin" Value="0,0,9,0" />
+            <Setter Property="Background" Value="{DynamicResource Bg.Subtle}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource Text.Primary}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=ToggleButton}}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource Accent}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource OnAccent}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FooterButton" TargetType="Button" BasedOn="{StaticResource TextButton}">
+            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
+
+    <Border BorderBrush="{DynamicResource Border.Hairline}" BorderThickness="1">
+        <DockPanel Margin="15,15,15,8">
+            <!-- Header -->
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <c:AppTile Size="36" VerticalAlignment="Center" />
+                <StackPanel Grid.Column="1" Margin="11,0,0,0" VerticalAlignment="Center">
+                    <TextBlock FontSize="15" FontWeight="SemiBold" Text="Captly" />
+                    <TextBlock Style="{StaticResource Small}" FontSize="12.5" Text="{Binding StatusText}" TextTrimming="CharacterEllipsis"
+                               AutomationProperties.LiveSetting="Polite" AutomationProperties.Name="{Binding StatusText}" />
+                </StackPanel>
+                <c:ToggleSwitch x:Name="Toggle" Grid.Column="2" Width="51" Height="31" VerticalAlignment="Center" IsChecked="{Binding IsOn}" AutomationProperties.Name="Captions" />
+            </Grid>
+
+            <!-- Footer -->
+            <Border DockPanel.Dock="Bottom" Margin="0,8,0,0" Padding="0,6,0,0" BorderBrush="{DynamicResource Border.Control}" BorderThickness="0,1,0,0">
+                <UniformGrid Rows="1">
+                    <Button Style="{StaticResource FooterButton}" Content="Transcripts" Command="{Binding OpenTranscriptsCommand}" />
+                    <Button Style="{StaticResource FooterButton}" Content="Settings…" Command="{Binding OpenSettingsCommand}" AutomationProperties.Name="Settings" />
+                    <Button Style="{StaticResource FooterButton}" Content="Quit" Command="{Binding QuitCommand}" AutomationProperties.Name="Quit Captly" />
+                </UniformGrid>
+            </Border>
+
+            <StackPanel>
+                <!-- Setup was skipped, and captions need a model -->
+                <Border Style="{StaticResource Card}" Visibility="{Binding NeedsSetup, Converter={StaticResource Visible}}">
+                    <Grid>
+                        <StackPanel Margin="0,0,110,0">
+                            <TextBlock FontSize="14" FontWeight="SemiBold" Text="Finish setting up Captly" />
+                            <TextBlock Margin="0,3,0,0" Style="{StaticResource Small}" FontSize="12.5" Text="Captions need a speech model." TextWrapping="Wrap" />
+                        </StackPanel>
+                        <Button HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource PrimaryButton}" Content="Finish Setup" Command="{Binding FinishSetupCommand}" />
+                    </Grid>
+                </Border>
+
+                <!-- Now playing -->
+                <Border Style="{StaticResource Card}" Visibility="{Binding HasMedia, Converter={StaticResource Visible}}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="52" Height="52" Background="#1C2130" CornerRadius="8" ClipToBounds="True">
+                                <Grid>
+                                    <c:Icon HorizontalAlignment="Center" VerticalAlignment="Center" Size="18" Data="{StaticResource Icon.Play}" Foreground="White" />
+                                    <Image Source="{Binding Thumbnail, Converter={StaticResource BytesToImage}}" Stretch="UniformToFill" />
+                                </Grid>
+                            </Border>
+                            <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Visibility="{Binding IsLive, Converter={StaticResource Visible}}">
+                                    <Ellipse Width="7" Height="7" VerticalAlignment="Center" Fill="{DynamicResource Success}" />
+                                    <TextBlock Margin="5,0,0,0" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Success.Text}" Text="LIVE" />
+                                </StackPanel>
+                                <TextBlock FontSize="15" FontWeight="SemiBold" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Style="{StaticResource Small}" FontSize="12.5" Text="{Binding MediaDetail}" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Margin="0,12,0,0" Visibility="{Binding HasTimeline, Converter={StaticResource Visible}}">
+                            <Grid Height="4">
+                                <Border Background="{DynamicResource Bg.Subtle}" CornerRadius="2" />
+                                <Border Background="{DynamicResource Text.Primary}" CornerRadius="2" RenderTransformOrigin="0,0.5">
+                                    <Border.RenderTransform>
+                                        <ScaleTransform ScaleX="{Binding Progress}" />
+                                    </Border.RenderTransform>
+                                </Border>
+                            </Grid>
+                            <Grid Margin="0,6,0,0">
+                                <TextBlock Style="{StaticResource Small}" Text="{Binding PositionText}" />
+                                <TextBlock HorizontalAlignment="Right" Style="{StaticResource Small}" Text="{Binding DurationText}" />
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Visibility="{Binding HasMedia, Converter={StaticResource Visible}, ConverterParameter=Invert}">
+                    <StackPanel>
+                        <TextBlock FontSize="14" FontWeight="SemiBold" Text="Nothing playing" />
+                        <TextBlock Margin="0,3,0,0" Style="{StaticResource Small}" FontSize="12.5" Text="Play a video, and captions start by themselves." TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Latest caption -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource Text.Secondary}" Text="LATEST CAPTION" />
+                        <TextBlock Margin="0,6,0,0" MaxHeight="58" FontSize="13" LineHeight="19" Text="{Binding LatestCaption}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasCaption}" Value="False">
+                                            <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tiles -->
+                <UniformGrid Margin="-6,-6,-6,6" Columns="2">
+                    <ToggleButton Margin="6" Style="{StaticResource Tile}" IsChecked="{Binding PinToVideo}" AutomationProperties.Name="Pin to video">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Style="{StaticResource TileCircle}">
+                                <c:Icon HorizontalAlignment="Center" VerticalAlignment="Center" Size="16" Data="{StaticResource Icon.Position}" Foreground="{Binding (TextElement.Foreground), RelativeSource={RelativeSource AncestorType=Border}}" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource TileTitle}" Text="Pin to video" />
+                                <TextBlock Style="{StaticResource Small}" Text="{Binding PinText}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Margin="6" Style="{StaticResource Tile}" IsChecked="{Binding SaveTranscript}" AutomationProperties.Name="Save transcript">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Style="{StaticResource TileCircle}">
+                                <c:Icon HorizontalAlignment="Center" VerticalAlignment="Center" Size="16" Data="{StaticResource Icon.Transcripts}" Foreground="{Binding (TextElement.Foreground), RelativeSource={RelativeSource AncestorType=Border}}" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource TileTitle}" Text="Save transcript" />
+                                <TextBlock Style="{StaticResource Small}" Text="{Binding SaveText}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </ToggleButton>
+                    <ToggleButton Margin="6" Style="{StaticResource Tile}" IsChecked="{Binding IsHidden}" AutomationProperties.Name="Hide captions">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Style="{StaticResource TileCircle}">
+                                <c:Icon HorizontalAlignment="Center" VerticalAlignment="Center" Size="16" Data="{StaticResource Icon.Eye}" Foreground="{Binding (TextElement.Foreground), RelativeSource={RelativeSource AncestorType=Border}}" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource TileTitle}" Text="Hide captions" />
+                                <TextBlock Style="{StaticResource Small}" Text="{Binding HideHint}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </ToggleButton>
+                    <Button Margin="6" Style="{StaticResource Tile}" Command="{Binding OpenSpeechCommand}" AutomationProperties.Name="Speech model settings">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Style="{StaticResource TileCircle}" Background="{DynamicResource Success}">
+                                <c:Icon HorizontalAlignment="Center" VerticalAlignment="Center" Size="16" Data="{StaticResource Icon.SpeechModel}" Foreground="White" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Style="{StaticResource TileTitle}" Text="{Binding DeviceTitle}" />
+                                <TextBlock Style="{StaticResource Small}" Text="{Binding ModelText}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Button>
+                </UniformGrid>
+
+                <!-- Source -->
+                <Button Height="48" Style="{StaticResource Tile}" Command="{Binding OpenSourceCommand}" AutomationProperties.Name="Source settings">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <c:Icon VerticalAlignment="Center" Size="16" Data="{StaticResource Icon.Source}" Foreground="{DynamicResource Text.Secondary}" />
+                        <TextBlock Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center" FontSize="14" Text="Source" />
+                        <TextBlock Grid.Column="2" MaxWidth="200" VerticalAlignment="Center" Style="{StaticResource Small}" FontSize="13" Text="{Binding SourceText}" TextTrimming="CharacterEllipsis" />
+                        <c:Icon Grid.Column="3" Margin="8,0,0,0" VerticalAlignment="Center" Size="14" Data="{StaticResource Icon.ChevronRight}" Foreground="{DynamicResource Text.Tertiary}" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</Window>

@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>$(CaptlyWindowsTfm)</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Captly</AssemblyName>
+    <RootNamespace>Captly.App</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\..\assets\brand\Captly.ico</ApplicationIcon>
+    <AssemblyTitle>Captly</AssemblyTitle>
+    <Description>Live captions that stick to your video</Description>
+    <Company>MAH</Company>
+    <Copyright>© 2026 MAH</Copyright>
+  </PropertyGroup>
+
+  <!-- scripts/publish.ps1: one self-contained exe per runtime. Models are downloaded by setup, not bundled.
+       Not compressed: the zip is as small either way, and a compressed exe used 150 MB more memory (D49). -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>none</DebugType>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Captly.Speech copies the native libraries for the machine it is built on, because a library
+       project is not told the app's runtime. A package for another runtime must carry that
+       runtime's own, or the engine cannot load (D51). -->
+  <Target Name="UseNativeLibrariesForRuntime" AfterTargets="ComputeResolvedFilesToPublishList" Condition="'$(RuntimeIdentifier)' != ''">
+    <Error Condition="!Exists('..\..\native\$(RuntimeIdentifier)\moonshine.dll')" Text="native\$(RuntimeIdentifier) is missing. Run scripts\get-native.ps1 -Rid $(RuntimeIdentifier)." />
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Filename)%(Extension)' == 'moonshine.dll' Or '%(Filename)%(Extension)' == 'onnxruntime.dll'" />
+      <_CaptlyNative Include="..\..\native\$(RuntimeIdentifier)\moonshine.dll;..\..\native\$(RuntimeIdentifier)\onnxruntime.dll" />
+      <ResolvedFileToPublish Include="@(_CaptlyNative)" RelativePath="%(_CaptlyNative.Filename)%(_CaptlyNative.Extension)" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Captly.Audio\Captly.Audio.csproj" />
+    <ProjectReference Include="..\Captly.Core\Captly.Core.csproj" />
+    <ProjectReference Include="..\Captly.Media\Captly.Media.csproj" />
+    <ProjectReference Include="..\Captly.Speech\Captly.Speech.csproj" />
+    <ProjectReference Include="..\Captly.UI\Captly.UI.csproj" />
+    <ProjectReference Include="..\Captly.Updates\Captly.Updates.csproj" />
+    <ProjectReference Include="..\Captly.Windowing\Captly.Windowing.csproj" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+</Project>

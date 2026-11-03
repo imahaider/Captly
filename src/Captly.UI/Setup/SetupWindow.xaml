@@ -1,0 +1,236 @@
+<!-- First-run setup (PLAN.md §6.3 #11–13 and the "First run" images): 640 × 540, close button only.
+     Wording about graphics cards follows D22: the model runs on the processor. -->
+<c:CaptlyWindow x:Class="Captly.UI.Setup.SetupWindow"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:c="clr-namespace:Captly.UI.Controls"
+                xmlns:sh="clr-namespace:Captly.UI.Shell"
+                Title="Set up Captly"
+                Width="640"
+                Height="540"
+                IsDialog="True"
+                WindowStartupLocation="CenterScreen"
+                Background="{DynamicResource Bg.Card}"
+                FontFamily="{DynamicResource Font.Base}"
+                FontSize="13"
+                Foreground="{DynamicResource Text.Primary}">
+    <c:CaptlyWindow.Resources>
+        <sh:VisibleWhen x:Key="Visible" />
+        <sh:VisibleAt x:Key="At" />
+
+        <Style x:Key="Subtitle" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,8,0,0" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="RowTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style x:Key="RowText" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,3,0,0" />
+            <Setter Property="FontSize" Value="13.5" />
+            <Setter Property="LineHeight" Value="19" />
+            <Setter Property="Foreground" Value="{DynamicResource Text.Secondary}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <!-- A step dot: a pill for the step shown, a dot for the others. -->
+        <Style x:Key="Dot" TargetType="Border">
+            <Setter Property="Width" Value="6" />
+            <Setter Property="Height" Value="6" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="Background" Value="{DynamicResource Toggle.Off}" />
+        </Style>
+
+        <!-- The model cards of step 2. -->
+        <Style x:Key="ModelCard" TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,0,0,10" />
+            <Setter Property="Foreground" Value="{DynamicResource Text.Primary}" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource Focus.Ring}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Card" Background="{DynamicResource Bg.Card}" BorderBrush="{DynamicResource Border.Hairline}" BorderThickness="1" CornerRadius="12" Padding="15,13">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Width="20" Height="20" VerticalAlignment="Center">
+                                    <Ellipse x:Name="Rim" Stroke="{DynamicResource Border.Control}" StrokeThickness="1.25" Fill="{DynamicResource Bg.Card}" />
+                                    <Ellipse x:Name="Dot" Width="8" Height="8" Fill="White" Visibility="Collapsed" />
+                                </Grid>
+                                <StackPanel Grid.Column="1" Margin="14,0,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock FontSize="14" FontWeight="SemiBold" Text="{Binding Title}" />
+                                        <c:Badge Margin="8,0,0,0" Variant="Info" Content="Recommended" Visibility="{Binding IsRecommended, Converter={StaticResource Visible}}" />
+                                    </StackPanel>
+                                    <TextBlock Margin="0,3,0,0" FontSize="12.5" Foreground="{DynamicResource Text.Secondary}" Text="{Binding Detail}" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource Accent}" />
+                                <Setter TargetName="Card" Property="BorderThickness" Value="2" />
+                                <Setter TargetName="Card" Property="Padding" Value="14,12" />
+                                <Setter TargetName="Rim" Property="Fill" Value="{DynamicResource Accent}" />
+                                <Setter TargetName="Rim" Property="Stroke" Value="{DynamicResource Accent}" />
+                                <Setter TargetName="Dot" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </c:CaptlyWindow.Resources>
+
+    <Grid Margin="48,40,48,28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- 1. Welcome -->
+        <StackPanel Visibility="{Binding StepIndex, Converter={StaticResource At}, ConverterParameter=0}">
+            <c:AppTile Size="72" HorizontalAlignment="Center" />
+            <TextBlock Margin="0,20,0,0" HorizontalAlignment="Center" Style="{StaticResource Text.SetupTitle}" FontSize="26" Text="Welcome to Captly" />
+            <TextBlock Style="{StaticResource Subtitle}" Text="Live captions that stick to your video." />
+            <Grid Margin="0,30,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="44" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <c:Icon Margin="0,1,0,0" VerticalAlignment="Top" Size="26" Data="{StaticResource Icon.Source}" Foreground="{DynamicResource Accent}" />
+                <StackPanel Grid.Column="1" Margin="0,0,0,18">
+                    <TextBlock Style="{StaticResource RowTitle}" Text="Only the app you choose" />
+                    <TextBlock Style="{StaticResource RowText}" Text="Listens to one app, like your browser, so music and notification sounds don't end up in your captions." />
+                </StackPanel>
+                <c:Icon Grid.Row="1" Margin="0,1,0,0" VerticalAlignment="Top" Size="26" Data="{StaticResource Icon.Monitor}" Foreground="{DynamicResource Accent}" />
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,18">
+                    <TextBlock Style="{StaticResource RowTitle}" Text="Follows your video" />
+                    <TextBlock Style="{StaticResource RowText}" Text="Captions sit at the bottom of the video window, move with it, and pause when the video pauses." />
+                </StackPanel>
+                <c:Icon Grid.Row="2" Margin="0,1,0,0" VerticalAlignment="Top" Size="26" Data="{StaticResource Icon.Lock}" Foreground="{DynamicResource Accent}" />
+                <StackPanel Grid.Row="2" Grid.Column="1">
+                    <TextBlock Style="{StaticResource RowTitle}" Text="Private and light" />
+                    <TextBlock Style="{StaticResource RowText}" Text="A small speech model runs on your own PC's processor. Nothing is uploaded." />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+        <!-- 2. Get the speech model -->
+        <StackPanel Visibility="{Binding StepIndex, Converter={StaticResource At}, ConverterParameter=1}">
+            <Border Width="56" Height="56" HorizontalAlignment="Center" Background="{DynamicResource Success.TextBg}" CornerRadius="14">
+                <c:Icon HorizontalAlignment="Center" VerticalAlignment="Center" Size="28" Data="{StaticResource Icon.SpeechModel}" Foreground="{DynamicResource Success.Text}" />
+            </Border>
+            <TextBlock Margin="0,18,0,0" HorizontalAlignment="Center" Style="{StaticResource Text.SetupTitle}" Text="Get the speech model" />
+            <TextBlock Style="{StaticResource Subtitle}" Text="{Binding ModelSubtitle}" />
+            <StackPanel Margin="0,22,0,0">
+                <RadioButton Style="{StaticResource ModelCard}" GroupName="SetupModel" DataContext="{Binding First}" IsChecked="{Binding IsSelected}"
+                             Visibility="{Binding Converter={StaticResource Visible}}" AutomationProperties.Name="{Binding Title}" />
+                <RadioButton Style="{StaticResource ModelCard}" GroupName="SetupModel" DataContext="{Binding Second}" IsChecked="{Binding IsSelected}"
+                             Visibility="{Binding Converter={StaticResource Visible}}" AutomationProperties.Name="{Binding Title}" />
+            </StackPanel>
+            <Border Margin="0,6,0,0" Padding="14,12" Background="{DynamicResource Bg.Subtle}" CornerRadius="12">
+                <StackPanel>
+                    <Grid Visibility="{Binding ProgressText, Converter={StaticResource Visible}}">
+                        <TextBlock FontSize="13.5" Text="{Binding ProgressText}" AutomationProperties.LiveSetting="Polite" />
+                        <TextBlock HorizontalAlignment="Right" FontSize="13.5" Foreground="{DynamicResource Text.Secondary}" Text="{Binding ProgressPercent}" />
+                    </Grid>
+                    <ProgressBar Height="5" Margin="0,9,0,0" Maximum="1" Value="{Binding Progress, Mode=OneWay}" Foreground="{DynamicResource Accent}" Background="{DynamicResource Border.Control}" BorderThickness="0"
+                                 Visibility="{Binding ProgressText, Converter={StaticResource Visible}}" AutomationProperties.Name="Download progress" />
+                    <TextBlock Margin="0,8,0,0" FontSize="13" Foreground="{DynamicResource Text.Secondary}" Text="{Binding Note}" TextWrapping="Wrap"
+                               Visibility="{Binding HasError, Converter={StaticResource Visible}, ConverterParameter=Invert}" />
+                    <Grid Visibility="{Binding HasError, Converter={StaticResource Visible}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource Close.Hover}" Text="{Binding Error}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive" />
+                        <Button Grid.Column="1" Margin="12,0,0,0" Style="{StaticResource SecondaryButton}" Content="Try Again" Command="{Binding RetryCommand}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- 3. You're all set -->
+        <StackPanel Visibility="{Binding StepIndex, Converter={StaticResource At}, ConverterParameter=2}">
+            <Border Width="56" Height="56" HorizontalAlignment="Center" Background="{DynamicResource Success}" CornerRadius="28">
+                <c:Icon HorizontalAlignment="Center" VerticalAlignment="Center" Size="28" Data="{StaticResource Icon.Check}" Foreground="White" />
+            </Border>
+            <TextBlock Margin="0,18,0,0" HorizontalAlignment="Center" Style="{StaticResource Text.SetupTitle}" Text="You're all set" />
+            <TextBlock Style="{StaticResource Subtitle}" Text="Play any video. Captions will appear on it automatically." />
+            <Grid Margin="0,24,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Border Width="36" Height="36" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#2C2C2E" CornerRadius="9">
+                    <c:Icon HorizontalAlignment="Center" VerticalAlignment="Center" Size="20" Data="{StaticResource Icon.Captions}" Foreground="White" />
+                </Border>
+                <StackPanel Grid.Column="1" Margin="0,0,0,14">
+                    <TextBlock Style="{StaticResource RowTitle}" Text="Find Captly in the taskbar tray" />
+                    <TextBlock Style="{StaticResource RowText}" Text="Click the icon to turn captions on or off, or pick another app." />
+                </StackPanel>
+                <c:Keycap Grid.Row="1" Margin="0,2,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Content="C" />
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,14">
+                    <TextBlock Style="{StaticResource RowTitle}" Text="Ctrl + Alt + C turns captions on or off" />
+                    <TextBlock Style="{StaticResource RowText}" Text="Works even when a video is fullscreen." />
+                </StackPanel>
+                <c:Icon Grid.Row="2" Margin="4,2,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Size="24" Data="{StaticResource Icon.Move}" Foreground="{DynamicResource Accent}" />
+                <StackPanel Grid.Row="2" Grid.Column="1">
+                    <TextBlock Style="{StaticResource RowTitle}" Text="Hold Ctrl and drag to move captions" />
+                    <TextBlock Style="{StaticResource RowText}" Text="In the fixed spot mode. Otherwise they stay pinned to the bottom of the video." />
+                </StackPanel>
+            </Grid>
+            <Border Margin="0,22,0,0" Padding="14,10" Background="{DynamicResource Bg.Subtle}" CornerRadius="12">
+                <Grid>
+                    <TextBlock VerticalAlignment="Center" FontSize="14" Text="Start Captly when Windows starts" />
+                    <c:ToggleSwitch HorizontalAlignment="Right" IsChecked="{Binding StartWithWindows}" AutomationProperties.Name="Start Captly when Windows starts" />
+                </Grid>
+            </Border>
+        </StackPanel>
+
+        <!-- Step dots and buttons -->
+        <Grid Grid.Row="1">
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" AutomationProperties.Name="{Binding StepIndex, StringFormat='Step {0} of 3'}">
+                <Border x:Name="Dot0" Style="{StaticResource Dot}" />
+                <Border x:Name="Dot1" Style="{StaticResource Dot}" />
+                <Border x:Name="Dot2" Style="{StaticResource Dot}" />
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Margin="0,0,12,0" Style="{StaticResource TextButton}" Content="Skip Setup" Command="{Binding SkipCommand}"
+                        Visibility="{Binding StepIndex, Converter={StaticResource At}, ConverterParameter=0}" />
+                <Button Margin="0,0,12,0" Style="{StaticResource SecondaryButton.Setup}" Content="Back" Command="{Binding BackCommand}"
+                        Visibility="{Binding StepIndex, Converter={StaticResource At}, ConverterParameter=1}" />
+                <Button x:Name="ContinueButton" Style="{StaticResource PrimaryButton.Setup}" MinWidth="100" Content="Continue" Command="{Binding ContinueCommand}" IsDefault="True"
+                        Visibility="{Binding StepIndex, Converter={StaticResource At}, ConverterParameter=0}" />
+                <Button Style="{StaticResource PrimaryButton.Setup}" MinWidth="100" Content="Continue" Command="{Binding ContinueCommand}"
+                        Visibility="{Binding StepIndex, Converter={StaticResource At}, ConverterParameter=1}" />
+                <Button Style="{StaticResource PrimaryButton.Setup}" Content="Start Captioning" Command="{Binding StartCommand}"
+                        Visibility="{Binding StepIndex, Converter={StaticResource At}, ConverterParameter=2}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</c:CaptlyWindow>

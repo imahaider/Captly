@@ -1,0 +1,59 @@
+name: release
+
+# Pushing a tag such as v0.1.0 builds, tests and packages Captly for both Windows runtimes, then
+# publishes the zips and their SHA-256 files as a GitHub release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+            os: windows-latest
+          # Upstream ships no ARM64 library, so get-native.ps1 builds it, which needs an ARM64 host (D5).
+          - rid: win-arm64
+            os: windows-11-arm
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Check the tag matches the version
+        shell: powershell
+        run: |
+          $version = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+          if ("v$version" -ne "${{ github.ref_name }}") { throw "Tag ${{ github.ref_name }} does not match version $version in Directory.Build.props" }
+
+      - name: Native libraries
+        shell: powershell
+        run: ./scripts/get-native.ps1 -Rid ${{ matrix.rid }}
+
+      # The tests that need no desktop session. build.yml runs every test on each push.
+      - name: Build and test
+        run: |
+          dotnet build Captly.slnx -c Release
+          dotnet test --project tests/Captly.Core.Tests/Captly.Core.Tests.csproj -c Release --no-build
+          dotnet test --project tests/Captly.Audio.Tests/Captly.Audio.Tests.csproj -c Release --no-build
+          dotnet test --project tests/Captly.Speech.Tests/Captly.Speech.Tests.csproj -c Release --no-build
+
+      - name: Package
+        shell: powershell
+        run: ./scripts/publish.ps1 -Rid ${{ matrix.rid }}
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Captly ${{ github.ref_name }}
+          body_path: docs/RELEASE_NOTES.md
+          files: |
+            dist/*.zip
+            dist/*.zip.sha256

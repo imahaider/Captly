@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(CaptlyPortableTfm)</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Captly.Core\Captly.Core.csproj" />
+    <ProjectReference Include="..\..\src\Captly.Updates\Captly.Updates.csproj" />
+  </ItemGroup>
+
+</Project>

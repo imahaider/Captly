@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(CaptlyPortableTfm)</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NativeRid>$(RuntimeIdentifier)</NativeRid>
+    <NativeRid Condition="'$(NativeRid)' == ''">$(NETCoreSdkRuntimeIdentifier)</NativeRid>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Captly.Core\Captly.Core.csproj" />
+    <EmbeddedResource Include="models.json" LogicalName="Captly.Speech.models.json" />
+    <EmbeddedResource Include="speedtest.pcm" LogicalName="Captly.Speech.speedtest.pcm" />
+    <InternalsVisibleTo Include="Captly.Speech.Tests" />
+
+    <!-- From scripts/get-native.ps1. Without them everything builds, but the engine cannot load. -->
+    <None Include="..\..\native\$(NativeRid)\*.dll" CopyToOutputDirectory="PreserveNewest" Link="%(Filename)%(Extension)" Visible="false" />
+  </ItemGroup>
+
+</Project>

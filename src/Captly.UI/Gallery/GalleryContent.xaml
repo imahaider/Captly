@@ -1,0 +1,137 @@
+<!-- Every control from §6.2 and the design images, in one column. -->
+<UserControl x:Class="Captly.UI.Gallery.GalleryContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:Captly.UI.Controls"
+             xmlns:s="clr-namespace:Captly.Core.Settings;assembly=Captly.Core"
+             Background="{DynamicResource Bg.Window}"
+             Foreground="{DynamicResource Text.Primary}"
+             FontFamily="{DynamicResource Font.Base}"
+             FontSize="13">
+    <StackPanel Margin="28,20">
+        <c:GroupCard Header="Buttons" Focusable="False">
+            <c:SettingRow Label="Standard">
+                <StackPanel Orientation="Horizontal">
+                    <Button Margin="0,0,8,0" Style="{StaticResource PrimaryButton}" Content="Check for Updates" />
+                    <Button Margin="0,0,8,0" Style="{StaticResource SecondaryButton}" Content="Check Now" />
+                    <Button Margin="0,0,8,0" Style="{StaticResource PillButton}" Content="Download" />
+                </StackPanel>
+            </c:SettingRow>
+            <c:SettingRow Label="Quiet">
+                <StackPanel Orientation="Horizontal">
+                    <Button Margin="0,0,8,0" Style="{StaticResource SubtleButton}" Content="Open" />
+                    <Button Style="{StaticResource TextButton}" Content="Open Folder" />
+                </StackPanel>
+            </c:SettingRow>
+            <c:SettingRow Label="Setup">
+                <StackPanel Orientation="Horizontal">
+                    <Button Margin="0,0,8,0" Style="{StaticResource SecondaryButton.Setup}" Content="Back" />
+                    <Button Style="{StaticResource PrimaryButton.Setup}" Content="Continue" />
+                </StackPanel>
+            </c:SettingRow>
+            <c:SettingRow Label="Disabled">
+                <Button Style="{StaticResource PrimaryButton}" Content="Continue" IsEnabled="False" />
+            </c:SettingRow>
+        </c:GroupCard>
+
+        <c:GroupCard Header="Inputs" HeaderDetail="Updates live">
+            <c:SettingRow Label="Toggle on">
+                <c:ToggleSwitch IsChecked="True" />
+            </c:SettingRow>
+            <c:SettingRow Label="Toggle off" Description="With a description under the label.">
+                <c:ToggleSwitch />
+            </c:SettingRow>
+            <c:SettingRow Label="Popover toggle">
+                <c:ToggleSwitch Width="46" Height="28" IsChecked="True" />
+            </c:SettingRow>
+            <c:SettingRow Label="Segmented">
+                <c:SegmentedControl SelectedIndex="2">
+                    <c:SegmentedItem Content="Light" />
+                    <c:SegmentedItem Content="Dark" />
+                    <c:SegmentedItem Content="Match Windows" />
+                </c:SegmentedControl>
+            </c:SettingRow>
+            <c:SettingRow Label="Select">
+                <c:MacSelect SelectedIndex="0">
+                    <c:MacSelectItem Content="2 seconds" />
+                    <c:MacSelectItem Content="4 seconds" />
+                </c:MacSelect>
+            </c:SettingRow>
+            <c:SettingRow Label="Text size" IsWide="True">
+                <c:MacSlider Minimum="14" Maximum="40" Value="22" ShowSizeLabels="True" />
+            </c:SettingRow>
+            <c:SettingRow Label="Background" IsWide="True">
+                <c:MacSlider Minimum="0" Maximum="100" Value="66" ValueFormat="{}{0:0}%" />
+            </c:SettingRow>
+            <c:SettingRow Label="File types">
+                <StackPanel Orientation="Horizontal">
+                    <c:MacCheckBox Margin="0,0,16,0" Content="Text (.txt)" IsChecked="True" />
+                    <c:MacCheckBox Content="Subtitles (.srt)" />
+                </StackPanel>
+            </c:SettingRow>
+            <c:SettingRow Label="Text color">
+                <StackPanel Orientation="Horizontal">
+                    <c:ColorSwatch Color="White" GroupName="Swatches" IsChecked="True" AutomationProperties.Name="White" />
+                    <c:ColorSwatch Color="#FFD60A" GroupName="Swatches" AutomationProperties.Name="Yellow" />
+                    <c:ColorSwatch Color="#5AC8FA" GroupName="Swatches" AutomationProperties.Name="Cyan" />
+                    <c:ColorSwatch Color="#30D158" GroupName="Swatches" AutomationProperties.Name="Green" />
+                </StackPanel>
+            </c:SettingRow>
+        </c:GroupCard>
+
+        <c:GroupCard Header="Badges and keys">
+            <c:SettingRow Label="Badges">
+                <StackPanel Orientation="Horizontal">
+                    <c:Badge Margin="0,0,6,0" Content="34M parameters" />
+                    <c:Badge Margin="0,0,6,0" Variant="Success" Content="Now playing" />
+                    <c:Badge Variant="Info" Content="Recommended" />
+                </StackPanel>
+            </c:SettingRow>
+            <c:SettingRow Label="Turn captions on or off">
+                <c:ShortcutRecorder Shortcut="Ctrl+Alt+C" />
+            </c:SettingRow>
+            <c:SettingRow Label="Open the transcript of this video">
+                <c:ShortcutRecorder x:Name="Recording" Shortcut="Ctrl+Alt+T" />
+            </c:SettingRow>
+        </c:GroupCard>
+
+        <c:GroupCard Header="Apps playing sound" HeaderDetail="Updates live">
+            <c:AppSourceRow GroupName="Sources" AppName="Google Chrome" Subtitle="YouTube · Inside a jet engine" IsNowPlaying="True" Level="0.8" IsChecked="True" />
+            <c:AppSourceRow GroupName="Sources" AppName="Spotify" Subtitle="Music" Level="0.5" />
+            <c:AppSourceRow GroupName="Sources" AppName="VLC media player" Subtitle="Paused" />
+            <c:AppSourceRow GroupName="Sources" AppName="All system audio" ShowMeter="False" Subtitle="Everything your speakers play, including notifications" />
+        </c:GroupCard>
+        <c:FooterNote Margin="2,-10,0,20" Icon="{StaticResource Icon.About}" Text="Per-app capture is on. Only the selected app is heard." />
+
+        <c:GroupCard Header="Model">
+            <c:ModelRow ModelName="Moonshine Tiny Streaming" Parameters="34M parameters" Description="Fastest. Great for clear speech on any PC." State="InUse" />
+            <c:ModelRow ModelName="Moonshine Small Streaming" Parameters="123M parameters" Description="More accurate." IsRecommended="True" State="Available" />
+            <c:ModelRow ModelName="Moonshine Medium Streaming" Parameters="245M parameters" Description="Most accurate." State="Downloading" Progress="0.42" />
+            <c:ModelRow ModelName="Installed model" Parameters="34M parameters" Description="Downloaded, not in use." State="Installed" />
+        </c:GroupCard>
+
+        <TextBlock Margin="0,0,0,10" Style="{StaticResource Text.GroupHeader}" Text="Style" />
+        <UniformGrid Margin="0,0,0,20" Rows="1">
+            <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Classic" Content="Classic" />
+            <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Glass" Content="Glass" IsChecked="True" />
+            <c:StylePresetCard Margin="0,0,10,0" GroupName="Styles" Preset="Outline" Content="Outline" />
+            <c:StylePresetCard GroupName="Styles" Preset="HighContrast" Content="High contrast" />
+        </UniformGrid>
+
+        <TextBlock Margin="0,0,0,10" Style="{StaticResource Text.GroupHeader}" Text="Captions" />
+        <Border Padding="16" Background="#232936" CornerRadius="12">
+            <StackPanel>
+                <c:CaptionBubble Margin="0,0,0,10" CaptionStyle="Glass" Text="The fan pulls in air, and most of it&#10;flows around the core, not through it." />
+                <c:CaptionBubble Margin="0,0,0,10" CaptionStyle="Classic" Text="Classic captions" />
+                <c:CaptionBubble Margin="0,0,0,10" CaptionStyle="Outline" Text="Outline captions" />
+                <c:CaptionBubble CaptionStyle="HighContrast" Text="High contrast captions" />
+            </StackPanel>
+        </Border>
+
+        <StackPanel Margin="0,20,0,0" Orientation="Horizontal">
+            <c:AppTile Margin="0,0,16,0" Size="76" />
+            <c:AppTile Margin="0,0,16,0" Size="36" VerticalAlignment="Center" />
+            <c:AppTile Size="16" VerticalAlignment="Center" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

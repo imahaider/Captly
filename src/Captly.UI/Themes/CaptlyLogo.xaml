@@ -1,0 +1,48 @@
+<!-- Captly logo resources. Merge into App.xaml: <ResourceDictionary Source="Brand/CaptlyLogo.xaml"/> -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <LinearGradientBrush x:Key="Captly.Brush.Tile" StartPoint="0,0" EndPoint="0,1">
+    <GradientStop Color="#2E8BFF" Offset="0"/>
+    <GradientStop Color="#0057C2" Offset="1"/>
+  </LinearGradientBrush>
+  <SolidColorBrush x:Key="Captly.Brush.Bars" Color="#0A6FE0"/>
+
+  <!-- Full logo tile. Use at 56 px and larger (setup 72 px, About 76 px). -->
+  <DrawingImage x:Key="Captly.Logo.Tile">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="Transparent" Geometry="M0,0 H1024 V1024 H0 Z"/>
+        <GeometryDrawing Brush="{StaticResource Captly.Brush.Tile}">
+          <GeometryDrawing.Geometry><RectangleGeometry Rect="48,48,928,928" RadiusX="208.8" RadiusY="208.8"/></GeometryDrawing.Geometry>
+        </GeometryDrawing>
+        <GeometryDrawing Brush="#FFFFFF" Geometry="M300,262 H724 A88,88 0 0 1 812,350 V546 A88,88 0 0 1 724,634 H470 L300,770 V634 H300 A88,88 0 0 1 212,546 V350 A88,88 0 0 1 300,262 Z"/>
+        <GeometryDrawing Brush="{StaticResource Captly.Brush.Bars}" Geometry="M478,320 L572,374 L478,428 Z">
+          <GeometryDrawing.Pen><Pen Brush="{StaticResource Captly.Brush.Bars}" Thickness="28" LineJoin="Round"/></GeometryDrawing.Pen>
+        </GeometryDrawing>
+        <GeometryDrawing Brush="{StaticResource Captly.Brush.Bars}">
+          <GeometryDrawing.Geometry><GeometryGroup><RectangleGeometry Rect="292,482,440,44" RadiusX="22" RadiusY="22"/><RectangleGeometry Rect="372,556,280,44" RadiusX="22" RadiusY="22"/></GeometryGroup></GeometryDrawing.Geometry>
+        </GeometryDrawing>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <!-- Simplified tile for 20–48 px (sidebar label 16–20 px, popover header 36 px, taskbar-style uses). -->
+  <DrawingImage x:Key="Captly.Logo.TileSmall">
+    <DrawingImage.Drawing>
+      <DrawingGroup>
+        <GeometryDrawing Brush="{StaticResource Captly.Brush.Tile}">
+          <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,32,32" RadiusX="7" RadiusY="7"/></GeometryDrawing.Geometry>
+        </GeometryDrawing>
+        <GeometryDrawing Brush="#FFFFFF" Geometry="M8.5,7 H23.5 A3.5,3.5 0 0 1 27,10.5 V17.5 A3.5,3.5 0 0 1 23.5,21 H14 L8.5,26 V21 H8.5 A3.5,3.5 0 0 1 5,17.5 V10.5 A3.5,3.5 0 0 1 8.5,7 Z"/>
+        <GeometryDrawing Brush="{StaticResource Captly.Brush.Bars}">
+          <GeometryDrawing.Geometry><GeometryGroup><RectangleGeometry Rect="9,11,14,3" RadiusX="1.5" RadiusY="1.5"/><RectangleGeometry Rect="11,16,10,3" RadiusX="1.5" RadiusY="1.5"/></GeometryGroup></GeometryDrawing.Geometry>
+        </GeometryDrawing>
+      </DrawingGroup>
+    </DrawingImage.Drawing>
+  </DrawingImage>
+
+  <!-- One-colour glyph (24 grid). Path.Fill picks the colour, e.g. white on the accent tile or Text.Primary. -->
+  <Geometry x:Key="Captly.Glyph.Geometry">F0 M5,3 H19 A3,3 0 0 1 22,6 V14 A3,3 0 0 1 19,17 H10 L5,21.5 V17 H5 A3,3 0 0 1 2,14 V6 A3,3 0 0 1 5,3 Z M7,8.5 H17 A1,1 0 0 1 18,9.5 V9.5 A1,1 0 0 1 17,10.5 H7 A1,1 0 0 1 6,9.5 V9.5 A1,1 0 0 1 7,8.5 Z M9,12 H15 A1,1 0 0 1 16,13 V13 A1,1 0 0 1 15,14 H9 A1,1 0 0 1 8,13 V13 A1,1 0 0 1 9,12 Z</Geometry>
+
+</ResourceDictionary>
