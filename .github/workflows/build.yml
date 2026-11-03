@@ -24,9 +24,13 @@ jobs:
       - name: Test
         shell: pwsh
         run: |
-          $out = dotnet test --solution Captly.slnx -c Release --no-build 2>&1
+          $out = @(dotnet test --solution Captly.slnx -c Release --no-build 2>&1 | ForEach-Object { "$_" -replace '\x1b\[[0-9;]*m', '' })
           $code = $LASTEXITCODE
           $out | Write-Output
-          $out | Select-String -Pattern '^\s*failed |Error Message|Assert\.|Exception:' | Select-Object -First 40 |
-              ForEach-Object { Write-Output "::error::$($_.Line.Trim())" }
+          # One annotation per failed test: its name, then the lines that say why.
+          for ($i = 0; $i -lt $out.Count; $i++) {
+              if ($out[$i] -notmatch '^\s*failed ') { continue }
+              $detail = ($out[$i..([Math]::Min($i + 6, $out.Count - 1))] | ForEach-Object { $_.Trim() }) -join ' | '
+              Write-Output "::error::$detail"
+          }
           exit $code
